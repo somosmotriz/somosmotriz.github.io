@@ -1,0 +1,458 @@
+/* ==========================================================================
+   MOTRIZ · SISTEMA VISUAL · biblioteca de elementos
+   --------------------------------------------------------------------------
+   Fonte da verdade em CÓDIGO da estética MOTRIZ. Extende (não substitui) o
+   brand bible em projetos/motriz/base-conhecimento/03_IDENTIDADE_VISUAL.md.
+   Serve pra post estático, carrossel, capa de reels e futuro site. As
+   composições de vídeo em Remotion (projetos/motriz/projetos-proprios/
+   motion-design) espelham estas mesmas regras em React/TS.
+
+   Uso: importar este arquivo e montar com as classes .mz-*. Cada peça é uma
+   pilha de camadas, de trás pra frente:
+     campo (cor base + atmosfera) -> textura de fundo -> A Corrente / blobs
+     -> conteúdo (texto, número) -> HUD/chrome -> vinheta -> grão
+   Ver catalogo.html pra cada elemento renderizado e SISTEMA-VISUAL.md pro
+   racional de cada decisão.
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@600;900&family=Instrument+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap');
+
+:root {
+	/* Tokens oficiais (03_IDENTIDADE_VISUAL.md). NÃO inventar cor fora daqui.
+	   sinal é EXCLUSIVO de dashboard, nunca em post/carrossel/reels. */
+	--mz-breu: #08080A;
+	--mz-carvao: #111114;
+	--mz-branco: #F5F4F1;
+	--mz-ignicao: #FF4D00;
+	--mz-aco: #6E7178;
+	--mz-sinal: #00C48C; /* dashboards SOMENTE */
+	--mz-osso: #F2EFE9;
+	--mz-grafite: #101014;
+
+	/* rgb helpers pra alpha */
+	--mz-ignicao-rgb: 255, 77, 0;
+	--mz-aco-rgb: 110, 113, 120;
+	--mz-branco-rgb: 245, 244, 241;
+
+	/* ESCALA DE CALOR (extensão da ignição, 2026-07-23).
+	   NÃO são cores chapadas novas: existem SÓ pra renderização (gradiente, glow,
+	   sombreado de metal fundido/forjado). Nunca preencher forma ou setar texto
+	   com elas — a ignição continua o único acento sólido, pra manter a 90/8/2.
+	   Temperatura: frio (ember) -> núcleo (ignição) -> quente (branco-quente). */
+	--mz-ember-frio: #7A1600;
+	--mz-ember: #B32B0A;
+	/* --mz-ignicao: #FF4D00 (núcleo, já definido acima) */
+	--mz-ignicao-quente: #FF8A3D;
+	--mz-branco-quente: #FFD8A8;
+
+	--mz-display: 'Archivo', system-ui, sans-serif;
+	--mz-body: 'Instrument Sans', system-ui, sans-serif;
+	--mz-mono: 'IBM Plex Mono', ui-monospace, monospace;
+}
+
+/* ==========================================================================
+   1 · CAMPO + ATMOSFERA
+   O fundo nunca é um preto chapado. Sempre tem uma fonte de luz direcional
+   (a "brasa" da forja) e uma leitura de profundidade. Referência de espírito:
+   Velovis (glow subindo de um canto), não gradiente roxo genérico.
+   ========================================================================== */
+
+.mz-field {
+	position: relative;
+	overflow: hidden;
+	background: var(--mz-breu);
+	color: var(--mz-branco);
+	font-family: var(--mz-body);
+}
+.mz-field--doc {
+	background: var(--mz-osso);
+	color: var(--mz-grafite);
+}
+
+/* Atmosfera: camada única, posição e intensidade controladas por variáveis.
+   --x/--y = posição da fonte de luz; --ember = pico da brasa (0.10-0.16);
+   --cool = lift de aço no canto oposto (0.04-0.08). Coloca UMA por peça. */
+.mz-atmosphere {
+	position: absolute;
+	inset: -10%;
+	z-index: 1;
+	pointer-events: none;
+	--x: 78%;
+	--y: 26%;
+	--ember: 0.13;
+	--cool: 0.06;
+	background:
+		radial-gradient(60% 50% at var(--x) var(--y),
+			rgba(var(--mz-ignicao-rgb), var(--ember)) 0%,
+			rgba(var(--mz-ignicao-rgb), calc(var(--ember) * 0.35)) 30%,
+			transparent 62%),
+		radial-gradient(70% 60% at calc(100% - var(--x)) calc(100% - var(--y)),
+			rgba(var(--mz-aco-rgb), var(--cool)) 0%,
+			transparent 60%);
+}
+
+/* ==========================================================================
+   2 · GLOW EM CAMADAS DE INTENSIDADE
+   Regra central (pedido direto do usuário: glow nunca uniforme):
+   TRÊS níveis, e no MÁXIMO UM brasa por peça (espelha a regra R2 do Risco).
+     brasa    = herói. o foco absoluto (um número, um nó, uma palavra).
+     rescaldo = apoio. ênfase secundária (a linha da Corrente, um título).
+     cinza    = ambiente. quase imperceptível, só dá vida.
+   Versões pra TEXTO (text-shadow) e pra ELEMENTO/halo (filter/box).
+   ========================================================================== */
+
+.mz-glow-brasa {
+	text-shadow:
+		0 0 12px rgba(var(--mz-ignicao-rgb), 0.55),
+		0 0 34px rgba(var(--mz-ignicao-rgb), 0.35),
+		0 0 90px rgba(var(--mz-ignicao-rgb), 0.22);
+}
+.mz-glow-rescaldo {
+	text-shadow:
+		0 0 10px rgba(var(--mz-branco-rgb), 0.22),
+		0 0 40px rgba(var(--mz-branco-rgb), 0.10);
+}
+.mz-glow-cinza {
+	text-shadow: 0 0 24px rgba(var(--mz-branco-rgb), 0.06);
+}
+
+/* halo pra elemento não-texto (nó da Corrente, ponto de dado) */
+.mz-halo-brasa { filter: drop-shadow(0 0 10px rgba(var(--mz-ignicao-rgb), 0.7)) drop-shadow(0 0 26px rgba(var(--mz-ignicao-rgb), 0.4)); }
+.mz-halo-rescaldo { filter: drop-shadow(0 0 8px rgba(var(--mz-branco-rgb), 0.3)); }
+
+/* Preenchimentos de calor (SÓ pra superfície de objeto/glow, ver nota na escala
+   de calor no :root). Gradiente molten: frio nas bordas, branco-quente no núcleo. */
+.mz-heat-radial {
+	background: radial-gradient(circle at 38% 34%,
+		var(--mz-branco-quente) 0%,
+		var(--mz-ignicao-quente) 16%,
+		var(--mz-ignicao) 38%,
+		var(--mz-ember) 66%,
+		var(--mz-ember-frio) 100%);
+}
+.mz-heat-linear {
+	background: linear-gradient(135deg,
+		var(--mz-ember-frio) 0%,
+		var(--mz-ignicao) 50%,
+		var(--mz-branco-quente) 100%);
+}
+/* glow de calor multicamada (mais rico que o brasa liso; pro nó/objeto herói) */
+.mz-glow-calor {
+	filter:
+		drop-shadow(0 0 8px rgba(var(--mz-ignicao-rgb), 0.75))
+		drop-shadow(0 0 22px rgba(179, 43, 10, 0.55))
+		drop-shadow(0 0 48px rgba(255, 138, 61, 0.35));
+}
+
+/* ==========================================================================
+   3 · TEXTURA / RUÍDO EM CAMADAS
+   Não é um grão só e chapado. São camadas com propósitos diferentes:
+     grao      = filme fino sobre tudo (padrão, sutil).
+     grao-forte= superfície mais suja/rica (capa, momento de peso).
+     superficie= textura de material num card/painel específico.
+     scanline  = leitura técnica/HUD numa faixa ou painel.
+   Referência: samusdesign (grão de filme pesado dá riqueza), Velovis (grão fino).
+   ========================================================================== */
+
+.mz-grao, .mz-grao-forte {
+	position: absolute;
+	inset: 0;
+	z-index: 30;
+	pointer-events: none;
+	mix-blend-mode: overlay;
+}
+.mz-grao {
+	opacity: 0.07;
+	background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+}
+.mz-grao-forte {
+	opacity: 0.13;
+	background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.62' numOctaves='3'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+}
+.mz-superficie {
+	background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/></svg>");
+	background-blend-mode: overlay;
+}
+.mz-scanline {
+	position: absolute;
+	inset: 0;
+	z-index: 14;
+	pointer-events: none;
+	opacity: 0.5;
+	background-image: repeating-linear-gradient(0deg, rgba(var(--mz-aco-rgb), 0.10) 0px, rgba(var(--mz-aco-rgb), 0.10) 1px, transparent 1px, transparent 4px);
+}
+.mz-vinheta {
+	position: absolute;
+	inset: 0;
+	z-index: 20;
+	pointer-events: none;
+	opacity: 0.5;
+	background: radial-gradient(ellipse 80% 70% at 50% 45%, transparent 40%, var(--mz-breu) 100%);
+}
+.mz-field--doc .mz-vinheta { background: radial-gradient(ellipse 82% 72% at 50% 45%, transparent 42%, rgba(0,0,0,0.10) 100%); }
+
+/* grade técnica de fundo, bem sutil */
+.mz-techgrid {
+	position: absolute;
+	inset: 0;
+	z-index: 12;
+	pointer-events: none;
+	opacity: 0.07;
+	background-image: linear-gradient(var(--mz-aco) 1px, transparent 1px), linear-gradient(90deg, var(--mz-aco) 1px, transparent 1px);
+	background-size: 64px 64px;
+}
+.mz-dotgrid {
+	position: absolute;
+	inset: -6%;
+	z-index: 12;
+	pointer-events: none;
+	opacity: 0.10;
+	background-image: radial-gradient(var(--mz-aco) 2px, transparent 2px);
+	background-size: 48px 48px;
+}
+
+/* ==========================================================================
+   4 · A CORRENTE (elemento-assinatura de fluxo)
+   O Risco é o CORTE (reto, 22°, faísca parada). A Corrente é o FIO por onde a
+   faísca corre (curva, viva, contínua) — é a materialização da lei R5 do Risco
+   ("em movimento, viaja no próprio eixo, como faísca correndo pelo fio").
+   Os dois convivem: um é pontuação seca, o outro é a trajetória.
+   É o elemento que ATRAVESSA fronteiras de slide no carrossel contínuo.
+   Referência direta: a linha neon com nó do Velovis.
+
+   Uso: inline SVG com o filtro de glow abaixo. A linha leva rescaldo; o nó
+   (ponto de inflexão / dado) leva brasa — e é o único brasa da peça.
+   Cor: ignicao. NUNCA ciano/verde arbitrário (o antigo #00E5FF era violação
+   de token; só existem os 8 tokens, e sinal/verde é exclusivo de dashboard).
+   ========================================================================== */
+
+.mz-corrente-svg { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 13; pointer-events: none; }
+/* Fio quente = 2 paths no MESMO d: bloom largo e borrado embaixo (halo) +
+   núcleo fino e nítido em cima (linha). Sozinha, a linha com glur ficava
+   apagada/borrada; a dupla dá leitura de filamento incandescente (tipo neon:
+   miolo cravado + brilho ao redor). */
+.mz-corrente-halo { fill: none; stroke: var(--mz-ignicao); stroke-width: 8; opacity: 0.5; filter: url(#mz-glow-linha); }
+.mz-corrente-linha { fill: none; stroke: var(--mz-ignicao); stroke-width: 2.5; opacity: 1; }
+.mz-corrente-fio { fill: none; stroke: var(--mz-aco); stroke-width: 1.5; opacity: 0.45; } /* fio de apoio, sem glow */
+.mz-corrente-no { fill: var(--mz-ignicao); filter: url(#mz-glow-no); } /* o nó = brasa */
+
+/* --- Corrente MULTI-FIO (versão elaborada, ref. via.masi mas em ember) ---
+   Vários fios paralelos com leve deslocamento, só o central acende (halo+linha).
+   Desenhe o MESMO path várias vezes com translateY escalonado: os de apoio com
+   .mz-corrente-feixe (aço, borrado e discreto), o central com halo+linha.
+   Os fios de apoio são recuados de propósito (blur + opacidade baixa): a
+   estrela é o fio central quente, o resto é profundidade. */
+.mz-corrente-feixe { fill: none; stroke: var(--mz-aco); stroke-width: 1; filter: blur(0.6px); }
+.mz-corrente-feixe--1 { opacity: 0.3; }
+.mz-corrente-feixe--2 { opacity: 0.18; }
+.mz-corrente-feixe--3 { opacity: 0.1; }
+
+/* Nós e marcadores. REGRA (correção do usuário): soltos, são só decoração e
+   incomodam — ficam discretos (baixa opacidade, leve blur). Só ganham destaque
+   quando têm FUNÇÃO: nó de dado (brasa) ancorando um bullet/número de um texto
+   que entra, igual à referência. */
+.mz-corrente-marcador { fill: var(--mz-aco); opacity: 0.3; filter: blur(0.5px); } /* triângulo de direção, discreto */
+.mz-corrente-no--apoio { fill: var(--mz-aco); opacity: 0.4; filter: blur(0.5px); } /* nó secundário, recuado */
+.mz-corrente-no--data { fill: var(--mz-ignicao); filter: url(#mz-glow-no); } /* nó de dado = brasa, o bullet */
+/* nó com anel (leitura de "ponto de conexão" quando ancora texto) */
+.mz-corrente-no--anel { fill: none; stroke: var(--mz-ignicao); stroke-width: 2; opacity: 0.5; }
+
+/* Cole este bloco <defs> uma vez dentro do primeiro SVG da peça:
+   <defs>
+     <filter id="mz-glow-linha" x="-30%" y="-30%" width="160%" height="160%">
+       <feGaussianBlur stdDeviation="6"/></filter>
+     <filter id="mz-glow-no" x="-200%" y="-200%" width="500%" height="500%">
+       <feGaussianBlur stdDeviation="10" result="b"/>
+       <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+     </filter>
+   </defs>
+*/
+
+/* ==========================================================================
+   5 · LETTERING COM PROFUNDIDADE (dolly-zoom / eco 3D)
+   Cópia borrada e ampliada atrás + nítida na frente. Dá a sensação de câmera
+   se aproximando. Regra de layout aprendida na dor: o eco é position:absolute;
+   inset:0 e por isso PRECISA de um wrap com display:inline-block do tamanho do
+   texto — senão o blur vira um retângulo do tamanho do container todo e lê
+   como um "painel de fundo da HUD" solto (correção direta do usuário).
+   ========================================================================== */
+
+.mz-depth { position: relative; display: inline-block; text-align: center; }
+.mz-depth-eco {
+	position: absolute; inset: 0;
+	font-family: var(--mz-display); font-weight: 900; letter-spacing: -1px;
+	color: var(--mz-branco); opacity: 0.15; filter: blur(16px);
+	transform: scale(1.16); line-height: inherit;
+}
+.mz-depth-front {
+	position: relative;
+	font-family: var(--mz-display); font-weight: 900; letter-spacing: -1px;
+	color: var(--mz-branco); line-height: inherit;
+}
+
+/* ==========================================================================
+   6 · TIPOGRAFIA
+   Display Archivo 900 (herói, caixa alta pro impacto). Body Instrument Sans.
+   Mono IBM Plex pra dado/código. SEM fonte script — as referências de script
+   (omatheusfontes, samusdesign) NÃO são MOTRIZ; a marca é técnica/industrial,
+   não caligráfica.
+   ========================================================================== */
+
+.mz-display { font-family: var(--mz-display); font-weight: 900; letter-spacing: -0.015em; line-height: 1.08; }
+.mz-display--alta { text-transform: uppercase; }
+.mz-body { font-family: var(--mz-body); font-weight: 400; line-height: 1.4; color: var(--mz-aco); }
+.mz-mono { font-family: var(--mz-mono); font-weight: 500; letter-spacing: 1.5px; }
+
+/* número/dado gigante fantasma atrás do conteúdo (atravessa slide no carrossel) */
+.mz-ghost-num {
+	font-family: var(--mz-display); font-weight: 900; letter-spacing: -8px;
+	color: var(--mz-branco); opacity: 0.055; line-height: 0.8;
+}
+
+/* palavra-chave: marca-texto CONTIDO (filete ignicao + brilho leve), nunca um
+   bloco de marca-texto amarelo tipo as refs de dentista. */
+.mz-key { color: var(--mz-branco); position: relative; white-space: nowrap; }
+.mz-key::after {
+	content: ''; position: absolute; left: 0; right: 0; bottom: -0.08em; height: 3px;
+	background: var(--mz-ignicao);
+	box-shadow: 0 0 10px rgba(var(--mz-ignicao-rgb), 0.6);
+}
+
+/* ==========================================================================
+   7 · O RISCO (leis R1-R5 do bible; aqui só o estilo base)
+   22° solto, ignicao, sem gradiente/sombra 3D/contorno. UM por peça, sempre
+   atravessando algo real. Medir a palavra-alvo e posicionar por cima.
+   ========================================================================== */
+.mz-risco {
+	position: absolute; height: 5px; background: var(--mz-ignicao);
+	transform-origin: center; transform: rotate(22deg); z-index: 41;
+}
+
+/* ==========================================================================
+   8 · HUD / CHROME técnico
+   Cantos de visor, carimbo de código MTZ-NNN, leitura de coordenada. Molda a
+   peça como "instrumento", não cartaz. Fica ACIMA do conteúdo (z alto).
+   ========================================================================== */
+.mz-hud-corner { position: absolute; width: 34px; height: 34px; opacity: 0.5; z-index: 90; }
+.mz-hud-corner.tl { top: 56px; left: 56px; border-top: 2px solid var(--mz-aco); border-left: 2px solid var(--mz-aco); }
+.mz-hud-corner.tr { top: 56px; right: 56px; border-top: 2px solid var(--mz-aco); border-right: 2px solid var(--mz-aco); }
+.mz-hud-corner.bl { bottom: 56px; left: 56px; border-bottom: 2px solid var(--mz-aco); border-left: 2px solid var(--mz-aco); }
+.mz-hud-corner.br { bottom: 56px; right: 56px; border-bottom: 2px solid var(--mz-aco); border-right: 2px solid var(--mz-aco); }
+.mz-carimbo { position: absolute; font-family: var(--mz-mono); font-size: 18px; letter-spacing: 1.5px; color: var(--mz-aco); opacity: 0.75; z-index: 90; }
+.mz-tag { display: inline-block; font-family: var(--mz-mono); font-size: 18px; letter-spacing: 2px; color: var(--mz-ignicao); }
+.mz-field--doc .mz-hud-corner { opacity: 0.6; }
+.mz-field--doc .mz-carimbo { color: var(--mz-aco); }
+
+/* ==========================================================================
+   9 · BLOBS de profundidade (manchas de cor desfocadas)
+   Camadas de cor com blur, em intensidades diferentes, algumas atravessando
+   fronteira de slide de propósito. Só tokens: ignicao ou aco.
+   ========================================================================== */
+.mz-blob { position: absolute; border-radius: 50%; filter: blur(80px); z-index: 11; pointer-events: none; }
+.mz-blob--ember { background: var(--mz-ignicao); }
+.mz-blob--aco { background: var(--mz-aco); }
+
+/* ==========================================================================
+   10 · MODO DOCUMENTO (oficina clara)
+   Inverte pro par osso/grafite. Mesmos elementos, tratamento sóbrio: a brasa
+   vira acento pontual, não banho de luz. Pra relatório, proposta, diagnóstico.
+   Use .mz-field--doc no container e as variantes já definidas acima.
+   ========================================================================== */
+
+/* ==========================================================================
+   11 · LOGO (wordmark, direção AC: torque + corte)
+   NÃO é invenção nova: é a extração pra classe reutilizável da peça que
+   está REALMENTE em produção, o rodapé do post real
+   squads/motriz-conteudo/output/2026-07-22-190323/v1/pecas/feed-slide-06.html
+   (MTZ-003 · PME · SEBRAE 2026). Essa é a versão mais recente e mais
+   completa encontrada no repo (22/07), mais nova que o rascunho do deck da
+   Squad Marca (18/07, slide-01.html, que tinha simplificado o corte pra só
+   uma linha, sem separar a palavra). Confirmado: a peça real usa sim o
+   deslocamento de metades (+0.045em) que o 03_IDENTIDADE_VISUAL.md
+   descreve, só que implementado com clip-path em vez de SVG (SVG com
+   viewBox esticado de forma não-uniforme distorce o glow, ver nota antiga
+   nesta mesma seção antes desta correção).
+   Torque: cada letra com seu próprio skewX/elevação e letter-spacing 0.02em
+   (positivo, pra não colidir com o skew, diferente do tracking -0.015em do
+   corpo de texto padrão, é override deliberado só da logo).
+   Corte: a palavra inteira duplicada em duas camadas com o mesmo clip-path
+   diagonal (0%,64% -> 100%,24%), a de cima deslocada +0.045em em X.
+   Veia: filete de ignição na fresta, com glow em duas camadas.
+   Marcação de letra fixa (M-O-T-R-I-Z), não um sistema genérico pra
+   qualquer palavra: é a wordmark, não um componente reaproveitável.
+   ========================================================================== */
+.mz-logo {
+	position: relative;
+	display: inline-block;
+	font-family: var(--mz-display);
+	font-weight: 900;
+	text-transform: uppercase;
+	line-height: 0.9;
+}
+.mz-logo-row { display: flex; }
+.mz-logo-row span { display: inline-block; letter-spacing: 0.02em; }
+/* torque: skewX progressivo -2.6deg por posição, elevação -0.9px por posição */
+.mz-logo-row span:nth-child(1) { transform: skewX(0deg) translateY(0); }
+.mz-logo-row span:nth-child(2) { transform: skewX(-2.6deg) translateY(-0.9px); }
+.mz-logo-row span:nth-child(3) { transform: skewX(-5.2deg) translateY(-1.8px); }
+.mz-logo-row span:nth-child(4) { transform: skewX(-7.8deg) translateY(-2.7px); }
+.mz-logo-row span:nth-child(5) { transform: skewX(-10.4deg) translateY(-3.6px); }
+.mz-logo-row span:nth-child(6) { transform: skewX(-13deg) translateY(-4.5px); }
+
+/* metade de baixo: fica no lugar */
+.mz-logo-half--bottom { clip-path: polygon(0% 64%, 100% 24%, 100% 100%, 0% 100%); }
+/* metade de cima: mesmo texto, desloca +0.045em em X (o corte) */
+.mz-logo-half--top {
+	position: absolute; inset: 0;
+	clip-path: polygon(0% 0%, 100% 0%, 100% 24%, 0% 64%);
+	transform: translateX(0.045em);
+}
+
+.mz-logo-veia {
+	position: absolute; left: -4%; right: -4%; top: 44%; height: max(3px, 0.022em);
+	background: var(--mz-ignicao);
+	/* -4.56deg, não -4.9deg: medido em pixel contra o clip-path real do
+	   corte (2026-07-24), a caixa da palavra MOTRIZ em Archivo 900 não tem
+	   a proporção que -4.9deg pressupõe, o ângulo "oficial" desde sempre
+	   estava levemente errado (visível de perto, sobretudo na perna reta
+	   do M). Ver nota de medição na seção 11. */
+	transform-origin: center; transform: rotate(-4.56deg);
+	/* min(): glow acompanha o tamanho em fontes pequenas, mas nunca passa do
+	   valor de referência (10px/20px, calibrado no rodapé real de 46px),
+	   senão em fonte grande o blur explode e "derrete" a palavra */
+	box-shadow: 0 0 min(10px, 0.22em) rgba(var(--mz-ignicao-rgb), 1), 0 0 min(20px, 0.43em) rgba(var(--mz-ignicao-rgb), 0.5);
+	z-index: 3; pointer-events: none;
+}
+
+.mz-logo--escura { color: var(--mz-branco); }
+.mz-logo--clara { color: var(--mz-grafite); }
+.mz-logo--mono .mz-logo-veia { background: currentColor; box-shadow: none; }
+
+/* redução abaixo de 40px: monograma M, mesma construção de corte da
+   wordmark (duas camadas + deslocamento), não só uma linha por cima do M
+   parado. A caixa do M sozinho tem proporção diferente da palavra inteira
+   (W/H = 1,05 contra 5,02 da palavra), então as porcentagens do clip-path
+   são outras pro MESMO ângulo real -4.56deg (medido 2026-07-24): a fórmula
+   é fração = 44% ± (W/2H)·sen(4.56°), 44% é o centro nos dois casos. */
+.mz-logo-mono {
+	position: relative; display: inline-flex; align-items: center; justify-content: center;
+	overflow: hidden;
+}
+.mz-logo-mono-glyph {
+	position: relative; display: inline-block;
+	font-family: var(--mz-display); font-weight: 900; text-transform: uppercase; line-height: 0.9;
+}
+.mz-logo-mono-glyph .half--bottom { clip-path: polygon(0% 48.17%, 100% 39.83%, 100% 100%, 0% 100%); }
+.mz-logo-mono-glyph .half--top {
+	position: absolute; inset: 0;
+	clip-path: polygon(0% 0%, 100% 0%, 100% 39.83%, 0% 48.17%);
+	transform: translateX(0.045em);
+}
+.mz-logo-mono-glyph .veia {
+	position: absolute; left: -18%; right: -18%; top: 44%; height: max(2px, 0.03em);
+	background: var(--mz-ignicao);
+	transform-origin: center; transform: rotate(-4.56deg);
+	box-shadow: 0 0 min(6px, 0.15em) rgba(var(--mz-ignicao-rgb), 1), 0 0 min(12px, 0.3em) rgba(var(--mz-ignicao-rgb), 0.5);
+	z-index: 3; pointer-events: none;
+}
+.mz-logo-mono--mono .veia { background: currentColor; box-shadow: none; }

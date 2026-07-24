@@ -1,0 +1,113 @@
+/* MOTRIZ · Site institucional · layout compartilhado entre páginas.
+   Tokens e componentes de marca vêm de elementos.css (fonte da verdade),
+   este arquivo só resolve layout de página (nav, seções, grid, footer). */
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+/* body NÃO usa .mz-field: aquilo é pra peça de tamanho fixo, overflow:hidden
+   quebraria o scroll de uma página real. Só herda os tokens direto. */
+body { min-height: 100vh; background: var(--mz-breu); color: var(--mz-branco); font-family: var(--mz-body); line-height: 1.55; }
+a { color: inherit; }
+img { max-width: 100%; display: block; }
+
+.wrap { max-width: 1120px; margin: 0 auto; padding: 0 28px; }
+
+/* ---------- Nav ---------- */
+header.site-nav {
+	position: sticky; top: 0; z-index: 100;
+	background: rgba(8,8,10,0.86); backdrop-filter: blur(10px);
+	border-bottom: 1px solid rgba(110,113,120,0.2);
+}
+.site-nav .wrap { display: flex; align-items: center; justify-content: space-between; height: 84px; }
+.site-nav a.brand { text-decoration: none; }
+.site-nav .mz-logo { font-size: 34px; }
+nav.site-links { display: flex; gap: 32px; align-items: center; }
+nav.site-links a {
+	color: var(--mz-branco); text-decoration: none; font-family: var(--mz-body);
+	font-size: 15px; opacity: 0.75; transition: opacity 0.15s;
+}
+nav.site-links a:hover, nav.site-links a[aria-current="page"] { opacity: 1; }
+nav.site-links a.cta {
+	opacity: 1; border: 1px solid var(--mz-ignicao); color: var(--mz-ignicao);
+	padding: 9px 18px; border-radius: 999px; font-family: var(--mz-mono); font-size: 13px; letter-spacing: 0.03em;
+}
+nav.site-links a.cta:hover { background: var(--mz-ignicao); color: var(--mz-breu); }
+.nav-toggle { display: none; }
+
+/* ---------- Hero ---------- */
+.hero { padding: 120px 0 96px; text-align: center; }
+.hero .eyebrow {
+	font-family: var(--mz-mono); font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase;
+	color: var(--mz-ignicao); margin-bottom: 20px; display: block;
+}
+.hero h1 {
+	font-family: var(--mz-display); font-weight: 900; letter-spacing: -0.02em;
+	font-size: clamp(38px, 6vw, 72px); line-height: 1.05; text-wrap: balance; margin-bottom: 26px;
+}
+.hero p.lead { font-family: var(--mz-body); font-size: 19px; line-height: 1.6; color: var(--mz-aco); max-width: 62ch; margin: 0 auto 40px; }
+.hero .actions { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+
+.btn {
+	display: inline-flex; align-items: center; gap: 8px; text-decoration: none;
+	font-family: var(--mz-mono); font-size: 14px; letter-spacing: 0.02em;
+	padding: 15px 28px; border-radius: 999px; transition: transform 0.15s, opacity 0.15s;
+}
+.btn:hover { transform: translateY(-1px); }
+.btn-primary { background: var(--mz-ignicao); color: var(--mz-breu); font-weight: 600; }
+.btn-ghost { border: 1px solid rgba(110,113,120,0.4); color: var(--mz-branco); }
+.btn-ghost:hover { border-color: var(--mz-branco); }
+
+/* ---------- Section shell ---------- */
+section.page-section { padding: 88px 0; border-top: 1px solid rgba(110,113,120,0.16); }
+section.page-section:first-of-type { border-top: none; }
+.section-head { max-width: 62ch; margin-bottom: 48px; }
+.section-head .eyebrow {
+	font-family: var(--mz-mono); font-size: 12.5px; letter-spacing: 0.12em; text-transform: uppercase;
+	color: var(--mz-ignicao); display: block; margin-bottom: 14px;
+}
+.section-head h2 { font-family: var(--mz-display); font-weight: 900; font-size: clamp(28px, 4vw, 42px); letter-spacing: -0.01em; text-wrap: balance; margin-bottom: 16px; }
+.section-head p { font-family: var(--mz-body); font-size: 16.5px; line-height: 1.65; color: var(--mz-aco); }
+
+/* ---------- Cards / grids ---------- */
+.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+.card {
+	background: var(--mz-carvao); border: 1px solid rgba(110,113,120,0.22); border-radius: 14px; padding: 28px;
+}
+.card .k { font-family: var(--mz-mono); font-size: 11.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--mz-ignicao); display: block; margin-bottom: 10px; }
+.card h3 { font-family: var(--mz-display); font-weight: 900; font-size: 20px; margin-bottom: 10px; letter-spacing: -0.01em; }
+.card p { font-family: var(--mz-body); font-size: 14.5px; line-height: 1.6; color: var(--mz-aco); }
+.card .price { margin-top: 16px; font-family: var(--mz-mono); font-size: 13px; color: var(--mz-branco); }
+
+/* ---------- Cycle strip (método) ---------- */
+.cycle-strip { display: flex; flex-wrap: wrap; gap: 4px; }
+.cycle-strip .step { flex: 1; min-width: 150px; background: var(--mz-carvao); border: 1px solid rgba(110,113,120,0.2); border-radius: 12px; padding: 22px 20px; position: relative; }
+.cycle-strip .step .letter { font-family: var(--mz-display); font-weight: 900; font-size: 30px; color: var(--mz-ignicao); line-height: 1; margin-bottom: 10px; }
+.cycle-strip .step h4 { font-family: var(--mz-display); font-weight: 900; font-size: 16px; margin-bottom: 8px; }
+.cycle-strip .step p { font-family: var(--mz-body); font-size: 13.5px; color: var(--mz-aco); line-height: 1.5; }
+
+/* ---------- Pending / disclosure blocks ---------- */
+.disclosure {
+	margin-top: 18px; font-family: var(--mz-mono); font-size: 12.5px; color: var(--mz-ignicao);
+	border: 1px solid rgba(255,77,0,0.35); background: rgba(255,77,0,0.06); border-radius: 8px; padding: 10px 14px; line-height: 1.5;
+}
+
+/* ---------- Footer ---------- */
+footer.site-footer { padding: 56px 0 48px; border-top: 1px solid rgba(110,113,120,0.2); }
+footer.site-footer .wrap { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; }
+footer.site-footer .mz-logo { font-size: 22px; }
+footer.site-footer nav { display: flex; gap: 22px; flex-wrap: wrap; }
+footer.site-footer nav a { color: var(--mz-aco); text-decoration: none; font-family: var(--mz-body); font-size: 13.5px; }
+footer.site-footer nav a:hover { color: var(--mz-branco); }
+footer.site-footer .legal { font-family: var(--mz-mono); font-size: 11.5px; color: var(--mz-aco); opacity: 0.7; margin-top: 24px; }
+
+@media (max-width: 760px) {
+	.grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+	/* nav de texto some no mobile, mas o CTA principal (agendar o Mergulho)
+	   continua visível: é a única ação que não pode ficar escondida atrás
+	   de um menu que ainda não existe nesta v1. */
+	nav.site-links a:not(.cta) { display: none; }
+	nav.site-links { gap: 0; }
+	.cycle-strip .step { min-width: 100%; }
+}
