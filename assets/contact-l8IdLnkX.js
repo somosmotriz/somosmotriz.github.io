@@ -1,0 +1,1 @@
+var e=`(21) 95926-1003`,t=`contato@somosmotriz.com.br`;function n(e){return`https://wa.me/5521959261003?text=${encodeURIComponent(e)}`}export{e as n,n as r,t};
